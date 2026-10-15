@@ -3,6 +3,14 @@ This API helps users create, list, update and delete tasks.
 
 **Base URL** : http://localhost:8000/task_manager_api
 
+## Fields
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| id | integer | Yes | A unique identifier assigned to each task. |
+| Title | string | Yes | The title or name of the task. |
+| Completed | boolean | Yes | Indicates whether the task has been completed (`true` or `false`). |
+
 ## ENDPOINTS
 ### 1. List Tasks
 
@@ -144,9 +152,13 @@ DELETE /task_manager_api/tasks/2 HTTP/1.1
 
 **Example Response**
 
-No response is returned.
+```json
+{
+  "Message": "Task deleted successfully",
+  "id": 2
+}
 
-**Success status code:** `204 No Content`
+**Success status code:** `200 Ok`
       
 **Failure case**
 `404 Not Found` - No task found with that ID.
