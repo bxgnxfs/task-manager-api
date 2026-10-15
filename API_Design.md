@@ -157,6 +157,7 @@ DELETE /task_manager_api/tasks/2 HTTP/1.1
   "Message": "Task deleted successfully",
   "id": 2
 }
+```
 
 **Success status code:** `200 Ok`
       
