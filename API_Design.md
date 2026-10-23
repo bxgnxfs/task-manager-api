@@ -26,20 +26,18 @@ GET /task_manager_api/tasks HTTP/1.1
 
 **Example Response**
 ```json
-{
-  "tasks": [
-    {
-      "id": 1,
-      "Title": "Create an API",
-      "Completed": true
-    },
-    {
-      "id": 2,
-      "Title": "Learn python",
-      "Completed": false
-    }
-  ]
-}
+[
+  {
+    "id": 1,
+    "Title": "Create an API",
+    "Completed": true
+  },
+  {
+    "id": 2,
+    "Title": "Learn python",
+    "Completed": false
+  }
+]
 ```
 
 **Success status code:** `200 Ok`
@@ -85,7 +83,6 @@ GET /task_manager_api/tasks/1 HTTP/1.1
 POST /task_manager_api/tasks HTTP/1.1
 
 {
-  "id": 3,
   "Title": "Learn FastAPI",
   "Completed": false 
 }
@@ -95,9 +92,7 @@ POST /task_manager_api/tasks HTTP/1.1
 
 ```json
 {
-  "id": 3,
-  "Title": "Learn FastAPI",
-  "Completed": false 
+  "message": "New task created successfully."
 }
 ```
 
@@ -154,8 +149,7 @@ DELETE /task_manager_api/tasks/2 HTTP/1.1
 
 ```json
 {
-  "Message": "Task deleted successfully",
-  "id": 2
+  "Message": "Task 2 deleted successfully"
 }
 ```
 
