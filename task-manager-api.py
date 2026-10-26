@@ -13,13 +13,13 @@ def create_db_tables():
 def on_startup():
   create_db_tables()
 
-@app.get("/task_manager_api/tasks", response_model = list[TaskResponse])
+@app.get("/task-manager-api/tasks", response_model = list[TaskResponse])
 def get_tasks(session: SessionDep):
   all_tasks = session.scalars(select(Task)).all()
 
   return all_tasks
 
-@app.get("/task_manager_api/tasks/{task_id}", response_model = TaskResponse)
+@app.get("/task-manager-api/tasks/{task_id}", response_model = TaskResponse)
 def get_tasks_with_id(task_id: int, session: SessionDep):
   task = session.get(Task, task_id)
   if not task:
@@ -27,7 +27,7 @@ def get_tasks_with_id(task_id: int, session: SessionDep):
   
   return task
 
-@app.post("/task_manager_api/tasks", status_code = status.HTTP_201_CREATED, response_model = TaskCreatedResponse)
+@app.post("/task-manager-api/tasks", status_code = status.HTTP_201_CREATED, response_model = TaskCreatedResponse)
 def create_task(new_task: CreateTask, session: SessionDep):
   task = Task(
     Title=new_task.Title,
@@ -40,7 +40,7 @@ def create_task(new_task: CreateTask, session: SessionDep):
 
   return {"message": "New task created successfully."}
 
-@app.patch("/task_manager_api/tasks/{task_id}", response_model = TaskResponse)
+@app.patch("/task-manager-api/tasks/{task_id}", response_model = TaskResponse)
 def update_task(update_task: UpdateTask, task_id: int, session: SessionDep):
   task = session.get(Task, task_id)
 
@@ -58,7 +58,7 @@ def update_task(update_task: UpdateTask, task_id: int, session: SessionDep):
 
   return task
 
-@app.delete("/task_manager_api/tasks/{task_id}")
+@app.delete("/task-manager-api/tasks/{task_id}")
 def delete_task(task_id: int, session: SessionDep):
   task = session.get(Task, task_id)
 
