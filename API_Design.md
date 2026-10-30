@@ -1,7 +1,7 @@
 # Task Manager API
 This API helps users create, list, update and delete tasks.
 
-**Base URL** : http://localhost:8000/task_manager_api
+**Base URL** : http://localhost:8000/task-manager-api
 
 ## Fields
 
@@ -21,7 +21,7 @@ This API helps users create, list, update and delete tasks.
 **Example Request**
 
 ```http
-GET /task_manager_api/tasks HTTP/1.1
+GET /task-manager-api/tasks HTTP/1.1
 ```
 
 **Example Response**
@@ -54,7 +54,7 @@ GET /task_manager_api/tasks HTTP/1.1
 **Example Request**
 
 ```http
-GET /task_manager_api/tasks/1 HTTP/1.1
+GET /task-manager-api/tasks/1 HTTP/1.1
 ```
 
 **Example Response**
@@ -80,7 +80,7 @@ GET /task_manager_api/tasks/1 HTTP/1.1
 **Example Request**
 
 ```http
-POST /task_manager_api/tasks HTTP/1.1
+POST /task-manager-api/tasks HTTP/1.1
 
 {
   "Title": "Learn FastAPI",
@@ -110,7 +110,7 @@ POST /task_manager_api/tasks HTTP/1.1
 **Example Request**
 
 ```http
-PATCH /task_manager_api/tasks/3 HTTP/1.1
+PATCH /task-manager-api/tasks/3 HTTP/1.1
 
 {
   "Completed": true
@@ -142,7 +142,7 @@ PATCH /task_manager_api/tasks/3 HTTP/1.1
 **Example Request**
 
 ```http
-DELETE /task_manager_api/tasks/2 HTTP/1.1
+DELETE /task-manager-api/tasks/2 HTTP/1.1
 ```
 
 **Example Response**

@@ -1,79 +1,73 @@
 from fastapi import FastAPI, HTTPException, status, Path
-from pydantic import BaseModel, Field
-from typing import Optional 
+from sqlalchemy import select
+
+from models import Task, UpdateTask, CreateTask, TaskCreatedResponse, TaskResponse
+from database import Base, engine, SessionDep
 
 app = FastAPI()
 
-class Task(BaseModel):
-  id: int = Field(gt=0)
-  Title: str
-  Completed: bool = False
+def create_db_tables():
+  Base.metadata.create_all(bind = engine)
 
-class CreateTask(BaseModel):
-  Title: str
-  Completed: bool = False
+@app.on_event("startup")
+def on_startup():
+  create_db_tables()
 
-class UpdateTask(BaseModel):
-  Title: Optional[str] = None
-  Completed: Optional[bool] = None
+@app.get("/task-manager-api/tasks", response_model = list[TaskResponse])
+def get_tasks(session: SessionDep):
+  all_tasks = session.scalars(select(Task)).all()
 
-class TaskCreatedResponse(BaseModel):
-  message: str
+  return all_tasks
 
-tasks = [
-  {
-      "id": 1,
-      "Title": "Create an API",
-      "Completed": True
-  },
-  {
-      "id": 2,
-      "Title": "Learn python",
-      "Completed": False
-  }
-]
+@app.get("/task-manager-api/tasks/{task_id}", response_model = TaskResponse)
+def get_tasks_with_id(task_id: int, session: SessionDep):
+  task = session.get(Task, task_id)
+  if not task:
+    raise HTTPException(status_code = 404, detail = "No task found with that ID.")
+  
+  return task
 
-@app.get("/task_manager_api/tasks", response_model = list[Task])
-def get_tasks():
-    return tasks
-
-@app.get("/task_manager_api/tasks/{task_id}", response_model = Task)
-def get_tasks_with_id(task_id: int = Path(gt=0)):
-  for task in tasks:
-    if task["id"] == task_id:
-      return task
-
-  raise HTTPException(status_code = 404, detail = "No task found with that ID.")
-
-@app.post("/task_manager_api/tasks", status_code = status.HTTP_201_CREATED, response_model = TaskCreatedResponse)
-def create_task(new_task: CreateTask):
-  task_id = max((task["id"] for task in tasks), default=0) + 1
-
-  task = {
-      "id": task_id,
-      "Title": new_task.Title,
-      "Completed": new_task.Completed
-  }
-
-  tasks.append(task)
+@app.post("/task-manager-api/tasks", status_code = status.HTTP_201_CREATED, response_model = TaskCreatedResponse)
+def create_task(new_task: CreateTask, session: SessionDep):
+  task = Task(
+    Title=new_task.Title,
+    Completed=new_task.Completed
+  )
+  
+  session.add(task)
+  session.commit()
+  session.refresh(task)
 
   return {"message": "New task created successfully."}
 
-@app.patch("/task_manager_api/tasks/{task_id}", response_model = Task)
-def update_task(task: UpdateTask, task_id: int = Path(gt=0)):
-  for existing_task in tasks:
-    if existing_task["id"] == task_id:
-      update_data = task.model_dump(exclude_unset=True)
-      existing_task.update(update_data)
-      return existing_task
+@app.patch("/task-manager-api/tasks/{task_id}", response_model = TaskResponse)
+def update_task(update_task: UpdateTask, task_id: int, session: SessionDep):
+  task = session.get(Task, task_id)
 
-  raise HTTPException(status_code=404, detail="No task found with that ID.")
+  if not task:
+    raise HTTPException(status_code=404, detail="No task found with that ID.")
 
-@app.delete("/task_manager_api/tasks/{task_id}")
-def delete_task(task_id: int = Path(gt=0)):
-  for task in tasks:
-    if task["id"] == task_id:
-      tasks.remove(task)
-      return {"Message": f"Task {task_id} deleted successfully"}  
+  update_data = update_task.model_dump(exclude_unset=True)
+    
+  for field, value in update_data.items():
+    if value is not None:
+      setattr(task, field, value)
+    
+  session.commit()
+  session.refresh(task)
 
-  raise HTTPException(status_code=404, detail="No task found with that ID.")
+  return task
+
+@app.delete("/task-manager-api/tasks/{task_id}")
+def delete_task(task_id: int, session: SessionDep):
+  task = session.get(Task, task_id)
+
+  if not task:
+    raise HTTPException(status_code=404, detail="No task found with that ID.")
+
+  session.delete(task)
+  session.commit()
+
+  return {"Message": f"Task {task_id} deleted successfully"}  
+
+  
